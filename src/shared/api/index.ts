@@ -1,1 +1,1 @@
-// API clients (Gemini, Firebase)
+export { exploreTopic, type TopicExploration } from './gemini';

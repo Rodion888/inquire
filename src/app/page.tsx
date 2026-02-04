@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import styles from './page.module.css'
 
 export default function HomePage() {
@@ -5,9 +6,9 @@ export default function HomePage() {
     <>
       <header className={styles.header}>
         <nav>
-          <a href="/" className={styles.logo}>
+          <Link href="/" className={styles.logo}>
             Inquire
-          </a>
+          </Link>
         </nav>
       </header>
 

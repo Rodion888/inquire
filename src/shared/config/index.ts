@@ -1,1 +1,1 @@
-// Environment variables and constants
+export { env } from './env';

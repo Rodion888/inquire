@@ -1,1 +1,1 @@
-// Utility functions
+export { QueryProvider } from './query-provider';
