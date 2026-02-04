@@ -40,6 +40,10 @@
   margin-bottom: var(--spacing-xl);
 }
 
+.hero > form {
+  margin: 0 auto;
+}
+
 /* ===== Search Form ===== */
 .searchForm {
   display: flex;
@@ -111,6 +115,7 @@
 }
 
 .topicCard {
+  display: block;
   padding: var(--spacing-xl);
   text-align: left;
   background-color: var(--color-bg-secondary);

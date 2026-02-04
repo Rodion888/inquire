@@ -1,5 +1,12 @@
-import Link from 'next/link'
-import styles from './page.module.css'
+import Link from 'next/link';
+import { SearchForm } from '@/features/create-exploration';
+import styles from './page.module.css';
+
+const EXAMPLE_TOPICS = [
+  { title: 'Quantum Computing', description: 'Explore the future of computation' },
+  { title: 'Machine Learning', description: 'How AI learns from data' },
+  { title: 'Space Exploration', description: 'Journey through the cosmos' },
+];
 
 export default function HomePage() {
   return (
@@ -16,48 +23,26 @@ export default function HomePage() {
         <section className={styles.hero}>
           <h1>Explore any topic</h1>
           <p>Dive deep into knowledge through interactive visual graphs</p>
-
-          <form className={styles.searchForm}>
-            <label htmlFor="topic" className="visually-hidden">
-              Enter a topic to explore
-            </label>
-            <input
-              id="topic"
-              type="text"
-              placeholder="What do you want to explore?"
-              className={styles.input}
-              autoComplete="off"
-            />
-            <button type="submit" className={styles.button}>
-              Explore
-            </button>
-          </form>
+          <SearchForm />
         </section>
 
         <section className={styles.examples}>
           <h2>Popular topics</h2>
           <ul className={styles.topicList}>
-            <li>
-              <article className={styles.topicCard}>
-                <h3>Quantum Computing</h3>
-                <p>Explore the future of computation</p>
-              </article>
-            </li>
-            <li>
-              <article className={styles.topicCard}>
-                <h3>Machine Learning</h3>
-                <p>How AI learns from data</p>
-              </article>
-            </li>
-            <li>
-              <article className={styles.topicCard}>
-                <h3>Space Exploration</h3>
-                <p>Journey through the cosmos</p>
-              </article>
-            </li>
+            {EXAMPLE_TOPICS.map((topic) => (
+              <li key={topic.title}>
+                <Link
+                  href={`/explore/${encodeURIComponent(topic.title)}`}
+                  className={styles.topicCard}
+                >
+                  <h3>{topic.title}</h3>
+                  <p>{topic.description}</p>
+                </Link>
+              </li>
+            ))}
           </ul>
         </section>
       </main>
     </>
-  )
+  );
 }
