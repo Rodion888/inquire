@@ -1,0 +1,76 @@
+.minimap {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  height: 172px;
+  /* width set via style prop */
+  background-color: rgba(10, 15, 26, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  z-index: var(--z-dropdown);
+  opacity: 0.85;
+  transition:
+    opacity var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.minimap:hover {
+  opacity: 1;
+  border-color: var(--color-primary);
+}
+
+.svg {
+  display: block;
+}
+
+.nodeExpanded {
+  fill: rgba(255, 77, 77, 0.1);
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-opacity: 0.5;
+}
+
+.nodeCollapsed {
+  fill: rgba(255, 255, 255, 0.06);
+  stroke: var(--color-border-hover);
+  stroke-width: 2;
+  stroke-opacity: 0.4;
+}
+
+.edge {
+  fill: none;
+  stroke: var(--color-border-hover);
+  stroke-width: 2;
+  stroke-opacity: 0.3;
+  stroke-dasharray: 8 6;
+}
+
+.edgeSolid {
+  fill: none;
+  stroke: var(--color-border-hover);
+  stroke-width: 2;
+  stroke-opacity: 0.4;
+}
+
+.viewport {
+  fill: rgba(255, 77, 77, 0.05);
+  stroke: var(--color-primary);
+  stroke-width: 3;
+  stroke-opacity: 0.4;
+}
+
+/* ===== Mobile: bottom bar next to zoom controls ===== */
+@media (max-width: 640px) {
+  .minimap {
+    bottom: var(--spacing-md);
+    left: calc(var(--spacing-md) + 36px + var(--spacing-xs));
+    right: var(--spacing-md);
+    height: 160px;
+    width: auto !important;
+    border-radius: var(--radius-md);
+  }
+}

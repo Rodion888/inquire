@@ -1,91 +1,52 @@
 # Inquire
 
-> Визуальный инструмент для исследования тем через интерактивный граф знаний
+> Visual knowledge exploration tool — interactive graph of topics
 
-**Вдохновение:** [rabbithole.chat](https://www.rabbithole.chat/)
+**Inspired by:** [rabbithole.chat](https://www.rabbithole.chat/)
 
-## Быстрый старт
+## Quick start
 
 ```bash
-cd ~/Desktop/apps/inquire
-nvm use
 pnpm install
 pnpm dev
 ```
 
-Откроется на http://localhost:3000
+## Stack
 
-## Стек
-
-| Технология | Назначение |
-|------------|------------|
+| Tech | Purpose |
+|------|---------|
 | Next.js 14 | App Router |
-| TypeScript | Типизация |
-| CSS Modules | Стили |
-| @tanstack/react-query | Кэширование, loading states |
-| Gemini 2.5 Flash | AI генерация |
-| pnpm | Пакетный менеджер |
+| TypeScript | Type safety |
+| CSS Modules | Styling |
+| @tanstack/react-query | Caching, loading states |
+| Groq (Llama 3.3 70B) | AI generation (primary) |
+| Gemini 2.5 Flash | AI generation (fallback) |
+| Firebase | Auth (Google) + Firestore |
+| pnpm | Package manager |
 
-## Архитектура — Feature-Sliced Design
+## Environment variables
+
+```env
+# Server-side only (NOT exposed to browser)
+GROQ_API_KEY=
+GEMINI_API_KEY=
+
+# Client-side (Firebase — safe to expose)
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+```
+
+## Architecture
 
 ```
 src/
 ├── app/                      # Next.js App Router
-├── widgets/                  # Самостоятельные блоки UI
-├── features/                 # Пользовательские сценарии
-├── entities/                 # Бизнес-сущности
-└── shared/                   # Переиспользуемое (ui, api, lib, config)
+│   ├── api/explore/          # Server-side AI route
+│   ├── explore/[topic]/      # Graph exploration page
+│   └── page.tsx              # Home page
+└── shared/                   # Reusable (ui, api, lib, config)
 ```
-
-## План разработки
-
-### Фаза 1 — Фундамент ✅
-- [x] Next.js + TypeScript + pnpm
-- [x] Структура FSD
-- [x] CSS переменные
-- [x] .nvmrc (Node.js 20)
-
-### Фаза 2 — Shared слой ✅
-- [x] shared/ui: Button, Input
-- [x] shared/config: env
-- [x] shared/api: Gemini клиент
-- [x] shared/lib: QueryProvider
-
-### Фаза 3 — Вертикальный слайс ✅
-- [x] Главная страница с формой
-- [x] /explore/[topic] — запрос к AI
-- [x] Карточка с ответом
-- [x] Связанные темы (переход по страницам)
-
-### Фаза 4 — Граф на одной странице 🔜
-- [ ] Переделать /explore на SPA
-- [ ] Состояние: массив карточек с позициями
-- [ ] SVG линии между карточками
-- [ ] Zoom: +/- кнопки, fit view
-- [ ] Drag карточек
-- [ ] Input в карточке для своего вопроса
-
-### Фаза 5 — UI/UX
-- [ ] Sidebar слева (список исследований)
-- [ ] Кнопка "New" справа вверху
-- [ ] Toggle приватности
-- [ ] Loading анимации
-
-### Фаза 6 — Сохранение
-- [ ] localStorage для графов
-- [ ] Firebase/IPFS (позже)
-
-### Фаза 7 — Web3 (будущее)
-- [ ] Wallet auth (MetaMask)
-- [ ] IPFS storage
-- [ ] Pay-per-query
-
-## Переменные окружения
-
-```env
-NEXT_PUBLIC_GEMINI_API_KEY=
-```
-
----
-
-*Обновлено: 2026-02-05*

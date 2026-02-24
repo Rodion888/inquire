@@ -1,5 +1,11 @@
+'use client';
+
+import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { SearchForm } from '@/features/create-exploration';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/shared/lib';
+import { Button, Input } from '@/shared/ui';
+import { HistorySidebar } from './explore/[topic]/HistorySidebar';
 import styles from './page.module.css';
 
 const EXAMPLE_TOPICS = [
@@ -8,18 +14,79 @@ const EXAMPLE_TOPICS = [
   { title: 'Space Exploration', description: 'Journey through the cosmos' },
 ];
 
+function SearchForm() {
+  const [topic, setTopic] = useState('');
+  const router = useRouter();
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const trimmed = topic.trim();
+    if (!trimmed) return;
+    router.push(`/explore/${encodeURIComponent(trimmed)}`);
+  };
+
+  return (
+    <form className={styles.searchForm} onSubmit={handleSubmit}>
+      <Input
+        value={topic}
+        onChange={(e) => setTopic(e.target.value)}
+        placeholder="What do you want to explore?"
+        aria-label="Enter a topic to explore"
+      />
+      <Button type="submit" disabled={!topic.trim()}>
+        Explore
+      </Button>
+    </form>
+  );
+}
+
 export default function HomePage() {
+  const { user, loading, signIn, logOut } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <>
       <header className={styles.header}>
-        <nav>
-          <Link href="/" className={styles.logo}>
-            Inquire
-          </Link>
+        <nav className={styles.nav}>
+          <div className={styles.navLeft}>
+            {user && (
+              <button
+                className={styles.burgerButton}
+                onClick={() => setSidebarOpen(true)}
+                title="History"
+              >
+                <span />
+                <span />
+                <span />
+              </button>
+            )}
+            <Link href="/" className={styles.logo}>
+              Inquire
+            </Link>
+          </div>
+          {!loading && (
+            <div className={styles.authSection}>
+              {user ? (
+                <button className={styles.signOutButton} onClick={logOut}>
+                  Sign Out
+                </button>
+              ) : (
+                <button className={styles.signInButton} onClick={signIn}>
+                  Sign In
+                </button>
+              )}
+            </div>
+          )}
         </nav>
       </header>
 
       <main className={styles.main}>
+        {user && (
+          <p className={styles.greeting}>
+            Hello, {user.displayName}
+          </p>
+        )}
+
         <section className={styles.hero}>
           <h1>Explore any topic</h1>
           <p>Dive deep into knowledge through interactive visual graphs</p>
@@ -43,6 +110,11 @@ export default function HomePage() {
           </ul>
         </section>
       </main>
+
+      <HistorySidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
     </>
   );
 }

@@ -1,20 +1,34 @@
-/* ===== CSS Variables ===== */
+/* ===== CSS Variables — Cosmic Theme ===== */
 :root {
-  /* Colors - Dark Theme (default) */
-  --color-bg: #0a0a0f;
-  --color-bg-secondary: #12121a;
-  --color-bg-tertiary: #1a1a24;
+  /* Backgrounds */
+  --color-bg: #050810;
+  --color-bg-secondary: #0a0f1a;
+  --color-bg-tertiary: #111827;
 
-  --color-text: #f5f5f7;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
+  /* Text */
+  --color-text: #f0f4ff;
+  --color-text-secondary: #8892b0;
+  --color-text-muted: #5a6480;
 
-  --color-primary: #6366f1;
-  --color-primary-hover: #818cf8;
+  /* Accent — Coral */
+  --color-primary: #ff4d4d;
+  --color-primary-hover: #e63946;
+  --color-primary-dark: #991b1b;
 
-  --color-border: #27272a;
-  --color-border-hover: #3f3f46;
+  /* Accent — Cyan */
+  --color-accent: #00e5cc;
+  --color-accent-hover: #14b8a6;
 
+  /* Borders */
+  --color-border: rgba(136, 146, 176, 0.15);
+  --color-border-hover: rgba(136, 146, 176, 0.3);
+  --color-border-accent: rgba(255, 77, 77, 0.3);
+
+  /* Surfaces */
+  --color-card-surface: rgba(10, 15, 26, 0.65);
+  --color-card-surface-hover: rgba(10, 15, 26, 0.8);
+
+  /* Status */
   --color-success: #22c55e;
   --color-error: #ef4444;
 
@@ -35,8 +49,9 @@
   --radius-full: 9999px;
 
   /* Typography */
-  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: 'Clash Display', system-ui, sans-serif;
+  --font-sans: 'Satoshi', system-ui, -apple-system, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
@@ -52,11 +67,13 @@
   --leading-normal: 1.5;
   --leading-relaxed: 1.75;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  /* Shadows — Coral-tinted */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(255, 77, 77, 0.15);
+  --shadow-glow-strong: 0 8px 30px rgba(255, 77, 77, 0.35);
+  --shadow-glow-cyan: 0 0 20px rgba(0, 229, 204, 0.15);
 
   /* Transitions */
   --transition-fast: 150ms ease;
@@ -84,6 +101,7 @@ html {
 }
 
 body {
+  position: relative;
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
@@ -94,10 +112,55 @@ body {
   min-height: 100dvh;
 }
 
+/* ===== Cosmic Background — Stars ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(2px 2px at 130px 80px, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 160px 120px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 250px 150px, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 200px 60px, rgba(0, 229, 204, 0.6), transparent),
+    radial-gradient(2px 2px at 300px 40px, rgba(255, 77, 77, 0.4), transparent);
+  background-size: 400px 200px;
+  background-repeat: repeat;
+  animation: twinkle 8s ease-in-out infinite alternate;
+}
+
+/* ===== Cosmic Background — Nebula ===== */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 50% at 20% 20%, rgba(255, 77, 77, 0.12), transparent 50%),
+    radial-gradient(60% 60% at 80% 30%, rgba(0, 229, 204, 0.08), transparent 50%),
+    radial-gradient(90% 70% at 50% 90%, rgba(255, 77, 77, 0.06), transparent 50%);
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.4; }
+  100% { opacity: 0.7; }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
 /* ===== Typography ===== */
 h1, h2, h3, h4, h5, h6 {
   line-height: var(--leading-tight);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
 }
 
 h1 { font-size: var(--text-4xl); }
@@ -128,7 +191,7 @@ a:hover {
 
 /* ===== Selection ===== */
 ::selection {
-  background-color: var(--color-primary);
+  background-color: rgba(255, 77, 77, 0.3);
   color: var(--color-text);
 }
 
