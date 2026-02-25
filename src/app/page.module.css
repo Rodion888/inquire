@@ -4,7 +4,7 @@
   top: 0;
   z-index: var(--z-dropdown);
   padding: var(--spacing-md) var(--spacing-xl);
-  background-color: rgba(5, 8, 16, 0.8);
+  background-color: rgba(8, 8, 10, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
@@ -53,7 +53,7 @@
   font-size: var(--text-xl);
   font-weight: 700;
   font-family: var(--font-display);
-  background: linear-gradient(135deg, #f0f4ff, #ff4d4d, #00e5cc);
+  background: linear-gradient(135deg, #f0f0e5, #e8c547, #b8a070);
   background-size: 200% 200%;
   background-clip: text;
   -webkit-background-clip: text;
@@ -130,7 +130,7 @@
   line-height: 1.2;
   letter-spacing: -0.02em;
   margin-bottom: var(--spacing-md);
-  background-image: linear-gradient(135deg, #f0f4ff 0%, #ff4d4d 100%);
+  background-image: linear-gradient(135deg, #f0f0e5 0%, #e8c547 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -172,7 +172,7 @@
 .input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.22);
+  box-shadow: 0 0 0 3px rgba(232, 197, 71, 0.22);
 }
 
 .button {
@@ -222,7 +222,7 @@
   gap: var(--spacing-md);
   padding: 24px 28px;
   text-align: center;
-  background: rgba(10, 15, 26, 0.8);
+  background: rgba(14, 14, 18, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -237,7 +237,7 @@
 .topicCard:hover {
   transform: translateY(-4px);
   border-color: var(--color-primary);
-  box-shadow: 0 12px 40px rgba(255, 77, 77, 0.15);
+  box-shadow: 0 12px 40px rgba(232, 197, 71, 0.15);
 }
 
 .topicCard h3 {

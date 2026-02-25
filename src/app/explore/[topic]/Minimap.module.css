@@ -4,7 +4,7 @@
   right: var(--spacing-xl);
   height: 172px;
   /* width set via style prop */
-  background-color: rgba(10, 15, 26, 0.8);
+  background-color: rgba(14, 14, 18, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
@@ -28,7 +28,7 @@
 }
 
 .nodeExpanded {
-  fill: rgba(255, 77, 77, 0.1);
+  fill: rgba(232, 197, 71, 0.1);
   stroke: var(--color-primary);
   stroke-width: 3;
   stroke-opacity: 0.5;
@@ -57,7 +57,7 @@
 }
 
 .viewport {
-  fill: rgba(255, 77, 77, 0.05);
+  fill: rgba(232, 197, 71, 0.05);
   stroke: var(--color-primary);
   stroke-width: 3;
   stroke-opacity: 0.4;

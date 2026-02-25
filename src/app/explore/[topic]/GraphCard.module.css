@@ -16,7 +16,7 @@
 
 .card:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 12px 40px rgba(255, 77, 77, 0.15);
+  box-shadow: 0 12px 40px rgba(232, 197, 71, 0.15);
 }
 
 /* ===== Collapsed — pill style ===== */
@@ -26,7 +26,7 @@
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 50px;
-  background: rgba(10, 15, 26, 0.8);
+  background: rgba(14, 14, 18, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   flex-direction: row;
@@ -36,7 +36,7 @@
 
 .card.collapsed:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 4px 20px rgba(255, 77, 77, 0.25);
+  box-shadow: 0 4px 20px rgba(232, 197, 71, 0.25);
 }
 
 .collapsedContent {
@@ -75,7 +75,7 @@
 
 .card.dragging {
   cursor: grabbing;
-  box-shadow: 0 12px 40px rgba(255, 77, 77, 0.3), var(--shadow-lg);
+  box-shadow: 0 12px 40px rgba(232, 197, 71, 0.3), var(--shadow-lg);
   border-color: var(--color-primary);
   z-index: 1000;
 }
@@ -157,7 +157,7 @@
 }
 
 .menuItemDanger:hover {
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: rgba(232, 197, 71, 0.1);
 }
 
 /* ===== Content (scrollable, hidden scrollbar) ===== */
@@ -229,13 +229,13 @@
   color: var(--color-primary);
 }
 
-/* Italic — cyan accent */
+/* Italic — warm accent */
 .blockText em {
   font-style: italic;
   color: var(--color-accent);
 }
 
-/* Inline code — cyan on dark */
+/* Inline code — warm accent on dark */
 .blockText code {
   font-family: var(--font-mono);
   font-size: 0.9em;
@@ -317,7 +317,7 @@
   border-radius: var(--radius-lg);
   cursor: pointer;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(255, 77, 77, 0.25);
+  box-shadow: 0 4px 20px rgba(232, 197, 71, 0.25);
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -325,7 +325,7 @@
 
 .followUpButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(255, 77, 77, 0.4);
+  box-shadow: 0 8px 30px rgba(232, 197, 71, 0.4);
 }
 
 /* ===== Responsive ===== */
