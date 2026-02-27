@@ -1,5 +1,5 @@
-import { ExploreHeader } from './ExploreHeader';
-import { GraphView } from './GraphView';
+import { ExploreHeader } from '@/widgets/explore-header';
+import { GraphCanvas } from '@/widgets/graph-canvas';
 import styles from './page.module.css';
 
 interface ExplorePageProps {
@@ -17,7 +17,7 @@ export default async function ExplorePage({ params, searchParams }: ExplorePageP
       <ExploreHeader />
 
       <main className={styles.main}>
-        <GraphView initialTopic={decodedTopic} savedExplorationId={id} />
+        <GraphCanvas key={`${decodedTopic}-${id || ''}`} initialTopic={decodedTopic} savedExplorationId={id} />
       </main>
     </>
   );

@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { GraphNode } from './types';
+import type { GraphNode } from '@/shared/types';
+import { CARD_WIDTH, CARD_HEIGHT, COLLAPSED_HEIGHT } from '@/entities/graph';
 import styles from './GraphEdges.module.css';
 
 interface GraphEdgesProps {
@@ -10,10 +11,6 @@ interface GraphEdgesProps {
   nodeHeights?: Map<string, number>;
   cardWidth?: number;
 }
-
-const DEFAULT_CARD_WIDTH = 400;
-const DEFAULT_CARD_HEIGHT = 350;
-const COLLAPSED_CARD_HEIGHT = 46;
 
 function getAncestorPath(nodes: GraphNode[], nodeId: string): Set<string> {
   const edgeKeys = new Set<string>();
@@ -29,7 +26,7 @@ function getAncestorPath(nodes: GraphNode[], nodeId: string): Set<string> {
   return edgeKeys;
 }
 
-export function GraphEdges({ nodes, hoveredNodeId, nodeHeights, cardWidth = DEFAULT_CARD_WIDTH }: GraphEdgesProps) {
+export function GraphEdges({ nodes, hoveredNodeId, nodeHeights, cardWidth = CARD_WIDTH }: GraphEdgesProps) {
   const edges: { from: GraphNode; to: GraphNode }[] = [];
 
   nodes.forEach((node) => {
@@ -49,10 +46,9 @@ export function GraphEdges({ nodes, hoveredNodeId, nodeHeights, cardWidth = DEFA
   return (
     <svg className={styles.svg}>
       {edges.map(({ from, to }) => {
-        const fromHeight = nodeHeights?.get(from.id) ?? (from.isExpanded ? DEFAULT_CARD_HEIGHT : COLLAPSED_CARD_HEIGHT);
-        const toHeight = nodeHeights?.get(to.id) ?? (to.isExpanded ? DEFAULT_CARD_HEIGHT : COLLAPSED_CARD_HEIGHT);
+        const fromHeight = nodeHeights?.get(from.id) ?? (from.isExpanded ? CARD_HEIGHT : COLLAPSED_HEIGHT);
+        const toHeight = nodeHeights?.get(to.id) ?? (to.isExpanded ? CARD_HEIGHT : COLLAPSED_HEIGHT);
 
-        // Use actual card width for expanded, estimate for collapsed pills
         const fromWidth = from.isExpanded ? cardWidth : Math.min(cardWidth, 200);
 
         const x1 = from.position.x + fromWidth;
@@ -60,7 +56,6 @@ export function GraphEdges({ nodes, hoveredNodeId, nodeHeights, cardWidth = DEFA
         const x2 = to.position.x;
         const y2 = to.position.y + toHeight / 2;
 
-        // Ensure control points create smooth curves even for small gaps
         const dx = x2 - x1;
         const offset = Math.max(60, dx * 0.5);
 

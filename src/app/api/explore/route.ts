@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-
-interface ContentBlock {
-  type: 'text' | 'heading' | 'list' | 'code';
-  content?: string;
-  items?: string[];
-  language?: string;
-}
+import type { ContentBlock, TopicCategory, DefinitionItem } from '@/shared/types';
 
 interface TopicExploration {
   title: string;
   content: string;
   blocks: ContentBlock[];
+  category?: TopicCategory;
   relatedTopics: string[];
 }
 
@@ -19,40 +14,112 @@ interface RawExploration {
   title: string;
   blocks?: ContentBlock[];
   content?: string;
+  category?: TopicCategory;
   relatedTopics: string[];
 }
 
-const EXPLORATION_PROMPT = `You are a knowledge exploration assistant. Given a topic, provide a detailed explanation structured as content blocks, plus 4-6 related topics.
+interface BranchNode {
+  topic: string;
+  title: string;
+  category?: TopicCategory;
+}
 
-Respond in JSON format:
+interface ExploreContext {
+  branchChain?: BranchNode[];
+  parentContent?: string;
+  existingTopics?: string[];
+}
+
+const EXPLORATION_PROMPT = `You are a knowledge assistant. Do exactly what the user asks — nothing more, nothing less.
+
+## STRICT RULES
+
+1. NO commentary. No "This is a great topic!", no "Let's explore...", no "Here's what you need to know". Just deliver the content.
+2. NO filler. Every sentence must carry information. If a sentence can be removed without losing meaning — remove it.
+3. NO introductions unless the topic genuinely needs context. "React hooks" → start explaining hooks. "English words" → start listing words.
+4. Answer PRECISELY what was asked. "list of words" = give words, not an essay about language learning. "how useState works" = explain useState, not all of React.
+5. Be SPECIFIC. Use real examples, real names, real numbers. Never say "there are many ways to..." — name them.
+
+## Response format
+
+JSON:
 {
-  "title": "Topic title",
-  "blocks": [
-    { "type": "heading", "content": "Section Title" },
-    { "type": "text", "content": "Paragraph of explanation. Use **bold** for key terms and *italic* for emphasis." },
-    { "type": "list", "items": ["First point", "Second point", "Third point"] },
-    { "type": "code", "content": "const x = 1;", "language": "javascript" }
-  ],
+  "title": "Topic Title",
+  "blocks": [ ... ],
   "relatedTopics": ["Topic 1", "Topic 2", "Topic 3", "Topic 4"]
 }
 
-Block types:
-- "heading": section title (content field)
-- "text": paragraph (content field). Use **bold** for key terms, *italic* for emphasis
-- "list": bullet list (items array). Each item is a string, can use **bold** and *italic*
-- "code": code snippet (content field, language field)
+## Block types
 
-Rules:
-- Structure into 2-4 sections, each starting with a heading block
-- Do NOT use markdown syntax like ## or - in text blocks, use proper block types instead
-- Keep explanations engaging, detailed and accessible
-- Related topics should be specific and interesting, not generic
-- Respond in the same language as the input topic`;
+Use whichever blocks fit. No required order, no mandatory blocks.
+
+{ "type": "text", "content": "Paragraph. **bold** for key terms, *italic* for emphasis, \`code\` for technical, [[BADGE]] for labels." }
+{ "type": "heading", "content": "Section Title" }
+{ "type": "subheading", "content": "Subsection" }
+{ "type": "list", "items": ["**Term** — description", "Item"] }
+{ "type": "code", "content": "const x = 1;", "language": "javascript" }
+{ "type": "definition", "items": [{ "term": "Hello", "definition": "Привет" }] }
+{ "type": "table", "headers": ["Name", "Type"], "rows": [["**count**", "\`number\`"]] }
+{ "type": "callout", "variant": "tip", "content": "Short note." }
+
+## Guidelines
+
+- Respond in the same language as the input
+- **bold** key concepts the user might want to explore deeper
+- Table rows must match header count
+- If the user wants a list/table/definitions — give ONLY that, no surrounding prose
+- Callouts: 1 sentence max, only when genuinely useful (gotcha, warning, pro tip)
+- 4-6 related topics as logical next steps, never repeat what's already in the graph
+
+## Continuation
+
+- "more"/"next"/"continue" = full card of NEW content, same density
+- With branch context: stay consistent, don't repeat what was shown
+- Follow-up question: answer in context of the parent card`;
+
+function buildUserMessage(topic: string, context?: ExploreContext): string {
+  let message = `Topic: ${topic}`;
+
+  if (context?.branchChain?.length) {
+    const chain = context.branchChain;
+    const root = chain[0];
+    const parent = chain[chain.length - 1];
+
+    message += `\n\nBRANCH CONTEXT (the user's exploration path — this is crucial for understanding what they want):`;
+    message += `\nRoot: "${root.topic}"`;
+    if (chain.length > 1) {
+      message += `\nPath: ${chain.map(n => `"${n.title}"`).join(' → ')} → current`;
+    }
+    message += `\nParent card: "${parent.title}"`;
+
+    if (context.parentContent) {
+      message += `\nAll content shown in this branch so far: ${context.parentContent}`;
+    }
+
+    message += `\n\nStay consistent with the branch context above. Avoid repeating content already shown.`;
+  }
+
+  if (context?.existingTopics?.length) {
+    message += `\n\nALREADY IN THE GRAPH (do NOT repeat content from these, do NOT suggest them as related topics):\n- ${context.existingTopics.join('\n- ')}`;
+  }
+
+  return message;
+}
 
 function blocksToPlainText(blocks: ContentBlock[]): string {
   return blocks.map(b => {
-    if (b.type === 'list') return (b.items ?? []).join('\n');
-    return b.content ?? '';
+    switch (b.type) {
+      case 'list':
+        return ((b.items ?? []) as string[]).join('\n');
+      case 'definition':
+        return ((b.items ?? []) as DefinitionItem[]).map(d => `${d.term}: ${d.definition}`).join('\n');
+      case 'table':
+        return [(b.headers ?? []).join(' | '), ...(b.rows ?? []).map(r => r.join(' | '))].join('\n');
+      case 'callout':
+        return `[${b.variant ?? 'note'}] ${b.content ?? ''}`;
+      default:
+        return b.content ?? '';
+    }
   }).join('\n\n');
 }
 
@@ -66,6 +133,7 @@ function normalizeResponse(raw: RawExploration): TopicExploration {
     title: raw.title,
     content,
     blocks,
+    category: raw.category,
     relatedTopics: raw.relatedTopics,
   };
 }
@@ -84,7 +152,7 @@ function parseResponse(text: string): TopicExploration {
   return normalizeResponse(JSON.parse(sanitized) as RawExploration);
 }
 
-async function exploreWithGroq(topic: string): Promise<TopicExploration> {
+async function exploreWithGroq(topic: string, context?: ExploreContext): Promise<TopicExploration> {
   const apiKey = process.env.GROQ_API_KEY ?? process.env.NEXT_PUBLIC_GROQ_API_KEY;
   if (!apiKey) throw new Error('GROQ_API_KEY not configured');
 
@@ -98,7 +166,7 @@ async function exploreWithGroq(topic: string): Promise<TopicExploration> {
       model: 'llama-3.3-70b-versatile',
       messages: [
         { role: 'system', content: EXPLORATION_PROMPT },
-        { role: 'user', content: `Topic to explore: ${topic}` },
+        { role: 'user', content: buildUserMessage(topic, context) },
       ],
       temperature: 0.7,
       response_format: { type: 'json_object' },
@@ -113,7 +181,7 @@ async function exploreWithGroq(topic: string): Promise<TopicExploration> {
   return normalizeResponse(JSON.parse(data.choices[0].message.content) as RawExploration);
 }
 
-async function exploreWithGemini(topic: string): Promise<TopicExploration> {
+async function exploreWithGemini(topic: string, context?: ExploreContext): Promise<TopicExploration> {
   const apiKey = process.env.GEMINI_API_KEY ?? process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
 
@@ -122,14 +190,14 @@ async function exploreWithGemini(topic: string): Promise<TopicExploration> {
 
   const result = await model.generateContent([
     EXPLORATION_PROMPT,
-    `Topic to explore: ${topic}`,
+    buildUserMessage(topic, context),
   ]);
   return parseResponse(result.response.text());
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { topic } = await request.json();
+    const { topic, context } = await request.json();
 
     if (!topic || typeof topic !== 'string') {
       return NextResponse.json({ error: 'Topic is required' }, { status: 400 });
@@ -141,9 +209,9 @@ export async function POST(request: NextRequest) {
 
     let result: TopicExploration;
     try {
-      result = await exploreWithGroq(topic);
+      result = await exploreWithGroq(topic, context);
     } catch {
-      result = await exploreWithGemini(topic);
+      result = await exploreWithGemini(topic, context);
     }
 
     return NextResponse.json(result);

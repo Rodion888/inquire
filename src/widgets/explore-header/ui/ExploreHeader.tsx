@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { HistorySidebar } from './HistorySidebar';
-import styles from './page.module.css';
+import { HistorySidebar } from '@/widgets/history-sidebar';
+import styles from './ExploreHeader.module.css';
 
 export function ExploreHeader() {
   const [sidebarOpen, setSidebarOpen] = useState(false);

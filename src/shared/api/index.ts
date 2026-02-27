@@ -1,4 +1,10 @@
-export { exploreTopic, type TopicExploration } from './gemini';
+export { exploreTopic, type TopicExploration, type ExploreContext, type BranchNode } from './gemini';
+export {
+  getUserSettings,
+  markCascadeDeleteAsked,
+  shouldAskCascadeDelete,
+  type UserSettings,
+} from './user-settings';
 export {
   saveExploration,
   getExploration,

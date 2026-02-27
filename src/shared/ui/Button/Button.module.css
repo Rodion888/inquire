@@ -5,15 +5,20 @@
   justify-content: center;
   gap: var(--spacing-sm);
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 700;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
   overflow: hidden;
   transition:
-    background-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+    color var(--transition-out),
+    background-color var(--transition-out),
+    border-color var(--transition-out),
+    transform var(--transition-out);
+}
+
+.button:hover {
+  transition-duration: 0s;
 }
 
 .button:disabled {
@@ -22,75 +27,48 @@
 }
 
 .button:not(:disabled):active {
-  transform: scale(0.98);
-}
-
-/* ===== Text layer (above glow) ===== */
-.text {
-  position: relative;
-  z-index: 2;
-}
-
-/* ===== Glow overlay (primary only) ===== */
-.glow {
-  position: absolute;
-  top: var(--y, 50%);
-  left: var(--x, 90%);
-  width: 180px;
-  height: 160px;
-  background: radial-gradient(
-    43% 44% at 50% 50%,
-    #f0f0e5 29%,
-    #f4efc1 40%,
-    #f3cfbb 50%,
-    rgba(255, 170, 129, 0.3) 70%,
-    transparent 100%
-  );
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  filter: blur(5px);
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.button:not(:disabled):hover .glow {
-  opacity: 1;
+  transform: scale(0.995);
 }
 
 /* ===== Variants ===== */
 .primary {
-  background-color: rgb(210, 202, 202);
-  color: #1a1a1e;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: var(--radius-full);
-  font-weight: 600;
+  background-color: var(--bg-2);
+  color: var(--fg-3);
+  border: 1px solid var(--bg-5);
 }
 
 .primary:not(:disabled):hover {
-  box-shadow: 0 4px 20px rgba(232, 197, 71, 0.25);
+  color: var(--accent-1);
+  background-color: var(--bg-3);
+  border-color: var(--bg-6);
+}
+
+.primary:not(:disabled):active {
+  color: var(--accent-2);
+  background-color: var(--bg-4);
 }
 
 .secondary {
-  background-color: var(--color-bg-tertiary);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
+  background-color: var(--bg-3);
+  color: var(--fg-2);
+  border: 1px solid var(--bg-5);
 }
 
 .secondary:not(:disabled):hover {
-  background-color: var(--color-bg-secondary);
-  border-color: var(--color-border-hover);
+  color: var(--fg-1);
+  background-color: var(--bg-4);
+  border-color: var(--bg-6);
 }
 
 .ghost {
   background-color: transparent;
-  color: var(--color-text-secondary);
+  color: var(--fg-4);
+  border: 1px solid transparent;
 }
 
 .ghost:not(:disabled):hover {
-  background-color: var(--color-bg-tertiary);
-  color: var(--color-text);
+  color: var(--fg-1);
+  background-color: var(--bg-3);
 }
 
 /* ===== Sizes ===== */
@@ -103,13 +81,13 @@
 .md {
   padding: var(--spacing-sm) var(--spacing-md);
   font-size: var(--text-base);
-  min-height: 40px;
+  min-height: 2.75rem;
 }
 
 .lg {
   padding: var(--spacing-md) var(--spacing-lg);
   font-size: var(--text-lg);
-  min-height: 48px;
+  min-height: 3rem;
 }
 
 /* ===== Loading ===== */
@@ -120,8 +98,8 @@
 .spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid transparent;
-  border-top-color: currentColor;
+  border: 2px solid var(--bg-5);
+  border-top-color: var(--accent-1);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }

@@ -1,0 +1,9 @@
+export const CARD_WIDTH = 400;
+export const CARD_WIDTH_MOBILE = 320;
+export const CARD_HEIGHT = 350;
+export const COLLAPSED_HEIGHT = 46;
+export const HORIZONTAL_GAP = 540;
+export const HORIZONTAL_GAP_MOBILE = 460;
+export const VERTICAL_GAP = 40;
+export const MOBILE_BREAKPOINT = 640;
+export const PILL_WIDTH_RATIO = 0.55;

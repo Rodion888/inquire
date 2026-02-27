@@ -11,7 +11,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/shared/config';
-import { GraphNode } from '@/app/explore/[topic]/types';
+import { GraphNode } from '@/shared/types';
 
 export interface Exploration {
   id: string;

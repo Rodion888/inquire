@@ -10,10 +10,10 @@
 
 .edge {
   fill: none;
-  stroke: var(--color-border-hover);
+  stroke: var(--bg-6);
   stroke-width: 2;
   opacity: 0.6;
-  transition: stroke-dasharray var(--transition-base);
+  transition: stroke-dasharray var(--transition-out);
 }
 
 .edge.dashed {
@@ -22,7 +22,7 @@
 }
 
 .edge.highlighted {
-  stroke: var(--color-primary);
+  stroke: var(--accent-1);
   stroke-width: 2.5;
   opacity: 1;
 }

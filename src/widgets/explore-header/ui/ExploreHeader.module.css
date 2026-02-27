@@ -1,0 +1,46 @@
+.actions {
+  position: fixed;
+  top: var(--spacing-lg);
+  left: var(--spacing-lg);
+  display: flex;
+  gap: var(--spacing-xs);
+  z-index: var(--z-dropdown);
+}
+
+.actionButton {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-3);
+  background-color: var(--bg-2);
+  border: 1px solid var(--bg-5);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    color var(--transition-out),
+    border-color var(--transition-out),
+    background-color var(--transition-out);
+}
+
+.actionButton:hover {
+  color: var(--accent-1);
+  border-color: var(--bg-6);
+  background-color: var(--bg-3);
+  transition-duration: 0s;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .actions {
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+  }
+
+  .actionButton {
+    width: 36px;
+    height: 36px;
+  }
+}

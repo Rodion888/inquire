@@ -17,25 +17,28 @@
   font-size: var(--text-xl);
   font-family: inherit;
   font-weight: 500;
-  color: var(--color-text);
-  background-color: rgba(14, 14, 18, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--color-border);
+  color: var(--fg-3);
+  background-color: var(--bg-2);
+  border: 1px solid var(--bg-5);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast);
+    color var(--transition-out),
+    background-color var(--transition-out),
+    border-color var(--transition-out);
 }
 
 .button:hover {
-  border-color: var(--color-primary);
-  background-color: var(--color-bg-secondary);
+  color: var(--accent-1);
+  background-color: var(--bg-3);
+  border-color: var(--bg-6);
+  transition-duration: 0s;
 }
 
 .button:active {
-  background-color: var(--color-primary);
+  color: var(--accent-2);
+  background-color: var(--bg-4);
+  transform: scale(0.995);
 }
 
 .lockButton {
@@ -44,7 +47,7 @@
 
 .zoomLevel {
   font-size: var(--text-xs);
-  color: var(--color-text-muted);
+  color: var(--fg-5);
   text-align: center;
   margin-top: var(--spacing-xs);
 }

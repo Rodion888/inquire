@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/shared/lib';
 import { Button, Input } from '@/shared/ui';
-import { HistorySidebar } from './explore/[topic]/HistorySidebar';
+import { HistorySidebar } from '@/widgets/history-sidebar';
 import styles from './page.module.css';
 
 const EXAMPLE_TOPICS = [
@@ -33,7 +33,7 @@ function SearchForm() {
         placeholder="What do you want to explore?"
         aria-label="Enter a topic to explore"
       />
-      <Button type="submit" disabled={!topic.trim()}>
+      <Button type="submit" className={styles.exploreButton}>
         Explore
       </Button>
     </form>

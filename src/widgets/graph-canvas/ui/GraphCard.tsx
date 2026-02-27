@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import { GraphNode, ContentBlock } from './types';
+import type { GraphNode, ContentBlock, DefinitionItem } from '@/shared/types';
 import styles from './GraphCard.module.css';
 
-/* ===== Inline formatting: **bold**, *italic*, `code` ===== */
+/* ===== Inline formatting: **bold**, *italic*, `code`, [[badge]] ===== */
 function renderInline(text: string, onKeywordClick?: (keyword: string) => void): React.ReactNode[] {
   const parts: React.ReactNode[] = [];
-  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
+  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`|\[\[(.+?)\]\])/g;
   let lastIndex = 0;
   let match;
   let key = 0;
@@ -34,6 +34,7 @@ function renderInline(text: string, onKeywordClick?: (keyword: string) => void):
     }
     else if (match[3]) parts.push(<em key={key++}>{match[3]}</em>);
     else if (match[4]) parts.push(<code key={key++}>{match[4]}</code>);
+    else if (match[5]) parts.push(<span key={key++} className={styles.badge}>{match[5]}</span>);
     lastIndex = match.index + match[0].length;
   }
 
@@ -45,18 +46,25 @@ function renderInline(text: string, onKeywordClick?: (keyword: string) => void):
 }
 
 /* ===== Block renderer ===== */
-function renderBlock(block: ContentBlock, index: number, onKeywordClick?: (keyword: string) => void): React.ReactNode {
+function renderBlock(block: ContentBlock, index: number, isLead: boolean, onKeywordClick?: (keyword: string) => void): React.ReactNode {
   switch (block.type) {
     case 'heading':
       return <h3 key={index} className={styles.blockHeading}>{block.content}</h3>;
 
+    case 'subheading':
+      return <h4 key={index} className={styles.blockSubheading}>{block.content}</h4>;
+
     case 'text':
-      return <p key={index} className={styles.blockText}>{renderInline(block.content ?? '', onKeywordClick)}</p>;
+      return (
+        <p key={index} className={`${styles.blockText} ${isLead ? styles.lead : ''}`}>
+          {renderInline(block.content ?? '', onKeywordClick)}
+        </p>
+      );
 
     case 'list':
       return (
         <ul key={index} className={styles.blockList}>
-          {(block.items ?? []).map((item, i) => (
+          {((block.items ?? []) as string[]).map((item, i) => (
             <li key={i}>{renderInline(item, onKeywordClick)}</li>
           ))}
         </ul>
@@ -65,9 +73,80 @@ function renderBlock(block: ContentBlock, index: number, onKeywordClick?: (keywo
     case 'code':
       return (
         <pre key={index} className={styles.blockCode}>
+          {block.language && (
+            <span className={styles.codeHeader}>{block.language}</span>
+          )}
           <code>{block.content}</code>
         </pre>
       );
+
+    case 'definition': {
+      const items = (block.items ?? []) as DefinitionItem[];
+      if (!items.length) return null;
+      return (
+        <dl key={index} className={styles.blockDefinition}>
+          {items.map((item, i) => (
+            <div key={i} className={styles.definitionPair}>
+              <dt className={styles.definitionTerm}>
+                {renderInline(item.term, onKeywordClick)}
+              </dt>
+              <dd className={styles.definitionDesc}>
+                {renderInline(item.definition, onKeywordClick)}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      );
+    }
+
+    case 'table': {
+      if (!block.headers || !block.rows) return null;
+      const headerCount = block.headers.length;
+      return (
+        <div key={index} className={styles.blockTableWrapper}>
+          <table className={styles.blockTable}>
+            <thead>
+              <tr>
+                {block.headers.map((header, i) => (
+                  <th key={i}>{renderInline(header, onKeywordClick)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {block.rows.map((row, rowIdx) => (
+                <tr key={rowIdx}>
+                  {Array.from({ length: headerCount }, (_, cellIdx) => (
+                    <td key={cellIdx}>
+                      {row[cellIdx] ? renderInline(row[cellIdx], onKeywordClick) : null}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    case 'callout': {
+      if (!block.content) return null;
+      const variantClass =
+        block.variant === 'tip' ? styles.calloutTip :
+        block.variant === 'warning' ? styles.calloutWarning :
+        styles.calloutNote;
+      const variantLabel =
+        block.variant === 'tip' ? 'Tip' :
+        block.variant === 'warning' ? 'Warning' :
+        'Note';
+      return (
+        <aside key={index} className={`${styles.blockCallout} ${variantClass}`}>
+          <span className={styles.calloutLabel}>{variantLabel}</span>
+          <p className={styles.calloutContent}>
+            {renderInline(block.content, onKeywordClick)}
+          </p>
+        </aside>
+      );
+    }
 
     default:
       return null;
@@ -95,7 +174,7 @@ interface GraphCardProps {
 }
 
 export function GraphCard({ node, isDragging, onExpand, onDragStart, onAskFollowUp, onDelete, onKeywordClick, onHover, onHoverEnd, onResize }: GraphCardProps) {
-  const { id, position, title, content, blocks, isLoading, isExpanded } = node;
+  const { id, position, title, content, blocks, category, isLoading, isExpanded } = node;
   const cardRef = useRef<HTMLElement>(null);
   const wasDragged = useRef(false);
   const startPos = useRef({ x: 0, y: 0 });
@@ -168,7 +247,6 @@ export function GraphCard({ node, isDragging, onExpand, onDragStart, onAskFollow
     if (dx > 5 || dy > 5) {
       wasDragged.current = true;
     }
-    // Tap on collapsed card = expand
     if (!wasDragged.current && isCollapsed && !isLoading) {
       onExpand();
     }
@@ -202,10 +280,21 @@ export function GraphCard({ node, isDragging, onExpand, onDragStart, onAskFollow
           ) : (
             <>
               <h3 className={styles.collapsedTitle}>{title}</h3>
-              <span className={styles.expandHint}>→</span>
+              <span className={styles.expandHint}>&rarr;</span>
             </>
           )}
         </div>
+        {!isLoading && onDelete && (
+          <button
+            className={styles.collapsedDelete}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            &times;
+          </button>
+        )}
       </article>
     );
   }
@@ -227,7 +316,12 @@ export function GraphCard({ node, isDragging, onExpand, onDragStart, onAskFollow
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <h2 className={styles.title}>{title}</h2>
+        <h2 className={styles.title}>
+          {title}
+          {category && category !== 'general' && (
+            <span className={styles.categoryBadge}>{category}</span>
+          )}
+        </h2>
         <button
           className={styles.menuButton}
           onClick={(e) => {
@@ -259,7 +353,14 @@ export function GraphCard({ node, isDragging, onExpand, onDragStart, onAskFollow
       </header>
       <div className={styles.content} data-card-content>
         {hasBlocks
-          ? blocks.map((block, i) => renderBlock(block, i, onKeywordClick))
+          ? (() => {
+              let firstTextSeen = false;
+              return blocks.map((block, i) => {
+                const isLead = block.type === 'text' && !firstTextSeen;
+                if (block.type === 'text') firstTextSeen = true;
+                return renderBlock(block, i, isLead, onKeywordClick);
+              });
+            })()
           : renderPlainContent(content)
         }
       </div>
